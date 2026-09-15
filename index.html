@@ -1,339 +1,59 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="de">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#111827">
 <title>NORA Tourenplaner</title>
 <style>
-  * { box-sizing: border-box; }
-  body { margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif; background:#f3f4f6; color:#111827; }
-  header { background:#111827; color:white; padding:18px 16px; position:sticky; top:0; z-index:10; }
-  header h1 { margin:0 0 4px; font-size:22px; }
-  header p { margin:0; opacity:.8; font-size:13px; }
-  main { max-width:900px; margin:auto; padding:14px; }
-  .panel { background:white; border-radius:16px; padding:14px; margin-bottom:14px; box-shadow:0 2px 10px rgba(0,0,0,.06); }
-  .toolbar { display:flex; gap:8px; flex-wrap:wrap; }
-  button { border:0; border-radius:11px; padding:11px 14px; font-size:15px; font-weight:600; cursor:pointer; }
-  .primary { background:#111827; color:white; }
-  .secondary { background:#e5e7eb; color:#111827; }
-  .warning { background:#fef3c7; color:#92400e; }
-  .success { background:#dcfce7; color:#166534; }
-  .customer { display:flex; align-items:center; gap:10px; padding:11px 4px; border-bottom:1px solid #eee; }
-  .customer:last-child { border-bottom:0; }
-  .customer input { width:20px; height:20px; }
-  .customer-main { flex:1; min-width:0; }
-  .name { font-weight:700; font-size:15px; }
-  .address { color:#6b7280; font-size:13px; margin-top:2px; }
-  .star { background:none; padding:4px 7px; font-size:23px; color:#9ca3af; }
-  .star.active { color:#f59e0b; }
-  .search { width:100%; padding:12px; border:1px solid #d1d5db; border-radius:11px; font-size:16px; margin-bottom:10px; }
-  .tour-row { display:flex; align-items:center; gap:8px; padding:10px; margin:7px 0; background:#f9fafb; border:1px solid #e5e7eb; border-radius:12px; }
-  .tour-row.fixed { border-left:5px solid #f59e0b; }
-  .num { width:30px; height:30px; border-radius:50%; background:#111827; color:white; display:flex; align-items:center; justify-content:center; font-weight:700; flex:none; }
-  .tour-info { flex:1; min-width:0; }
-  .move { display:flex; flex-direction:column; gap:3px; }
-  .move button { padding:5px 8px; background:#e5e7eb; font-size:12px; }
-  .tour-note { color:#6b7280; font-size:12px; margin-top:2px; }
-  .badge { display:inline-block; font-size:11px; padding:3px 6px; border-radius:8px; background:#fef3c7; color:#92400e; margin-left:5px; }
-  .empty { text-align:center; color:#6b7280; padding:25px 10px; }
-  .status { font-size:13px; color:#6b7280; margin-top:8px; line-height:1.4; }
-  .route-actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
-  .hidden { display:none !important; }
-  .small { font-size:12px; color:#6b7280; }
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:#f3f4f6;color:#111827}header{background:#111827;color:white;padding:18px 16px;position:sticky;top:0;z-index:10}h1{font-size:22px;margin:0 0 5px}.start{font-size:13px;opacity:.85}.wrap{max-width:850px;margin:auto;padding:14px}.card{background:white;border-radius:14px;padding:14px;margin-bottom:12px;box-shadow:0 2px 8px #00000012}.tools{display:flex;gap:8px;flex-wrap:wrap}.tools input{flex:1;min-width:180px;padding:11px;border:1px solid #d1d5db;border-radius:10px;font-size:15px}.btn{border:0;border-radius:10px;padding:10px 13px;background:#e5e7eb;font-weight:600;font-size:14px}.btn.primary{background:#111827;color:white}.btn.green{background:#15803d;color:white}.btn:active{transform:scale(.98)}.customer{display:flex;align-items:center;gap:10px;padding:10px 4px;border-bottom:1px solid #eee}.customer:last-child{border-bottom:0}.customer input{width:20px;height:20px}.info{flex:1;min-width:0}.name{font-weight:650}.addr{font-size:13px;color:#6b7280;margin-top:2px}.star{border:0;background:transparent;font-size:24px;line-height:1;padding:3px}.star.on{color:#f59e0b}.count{font-weight:700;margin-bottom:8px}.route-item{display:flex;gap:9px;align-items:flex-start;border-bottom:1px solid #eee;padding:10px 0}.num{min-width:27px;height:27px;border-radius:50%;background:#111827;color:#fff;text-align:center;padding-top:4px;font-weight:700;font-size:13px}.route-main{flex:1}.route-actions{display:flex;gap:3px}.arrow{border:0;background:#e5e7eb;border-radius:7px;font-size:18px;width:31px;height:31px}.small{font-size:12px;color:#6b7280}.notice{background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:10px;font-size:12px;color:#9a3412;margin-top:10px}.hidden{display:none}.empty{color:#6b7280;text-align:center;padding:15px}.tourhead{display:flex;justify-content:space-between;gap:8px;align-items:center}.tourhead h2{font-size:18px;margin:0}.pill{font-size:12px;background:#e5e7eb;border-radius:99px;padding:5px 8px;font-weight:600}.footerbtns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
 </style>
 </head>
 <body>
-<header>
-  <h1>🚚 NORA Tourenplaner</h1>
-  <p>Start & Ende: AH Feicht · NORA Haar</p>
-</header>
-
-<main>
-  <section class="panel">
-    <div class="toolbar">
-      <button class="primary" onclick="createTour()">🚚 Tour erstellen</button>
-      <button class="secondary" onclick="selectAll()">Alle auswählen</button>
-      <button class="secondary" onclick="clearSelection()">Auswahl löschen</button>
-    </div>
-    <div id="status" class="status">Kunden auswählen und anschließend „Tour erstellen“ drücken.</div>
-  </section>
-
-  <section class="panel" id="customerPanel">
-    <input id="search" class="search" placeholder="🔎 Kunde oder Ort suchen..." oninput="renderCustomers()">
-    <div id="customerList"></div>
-  </section>
-
-  <section class="panel hidden" id="tourPanel">
-    <h2 style="margin-top:0">Aktuelle Tour</h2>
-    <div class="small">⭐ markierte Kunden werden bei der Berechnung bevorzugt. Nach einer manuellen Verschiebung wird dieser Kunde als feste Position behandelt; die übrigen Stopps werden danach neu geordnet, damit die Fahrt ab dort möglichst logisch weiterläuft.</div>
-    <div id="tourList" style="margin-top:10px"></div>
-    <div class="route-actions">
-      <button class="primary" onclick="openGoogleMaps()">🧭 Tour in Google Maps</button>
-      <button class="secondary" onclick="recalculateTour()">🔄 Neu berechnen</button>
-      <button class="warning" onclick="resetManualOrder()">↩ Automatische Reihenfolge</button>
-    </div>
-  </section>
-</main>
-
+<header><h1>🚚 NORA Tourenplaner</h1><div class="start">Start & Ende: AH Feicht / NORA · Münchner Str. 39 · 85540 Haar</div></header>
+<div class="wrap">
+  <div class="card">
+    <div class="tools"><input id="search" placeholder="Kunde suchen…"><button class="btn" onclick="selectAll()">Alle auswählen</button><button class="btn" onclick="clearAll()">Auswahl löschen</button></div>
+    <div style="margin-top:12px" class="count"><span id="count">0</span> Kunden ausgewählt</div>
+    <div id="customers"></div>
+  </div>
+  <div class="card">
+    <div class="tourhead"><h2>Tour</h2><span class="pill">⭐ = Priorität</span></div>
+    <div class="small" style="margin:7px 0 12px">Nach „Tour erstellen“ kannst du die Reihenfolge mit ↑/↓ ändern. Beim Verschieben wird der restliche Abschnitt ab diesem Kunden geografisch neu sortiert.</div>
+    <button class="btn primary" style="width:100%;font-size:16px" onclick="createTour()">🚚 Tour erstellen</button>
+    <div id="route" style="margin-top:10px"><div class="empty">Noch keine Tour erstellt.</div></div>
+    <div id="routeButtons" class="footerbtns hidden"><button class="btn green" onclick="openGoogleMaps()">🗺️ Gesamte Tour in Google Maps</button><button class="btn" onclick="resetTour()">Tour zurücksetzen</button></div>
+  </div>
+</div>
 <script>
-const BASE = {
-  name:"AH Feicht / NORA",
-  address:"Münchner Str. 39, 85540 Haar, Deutschland"
-};
+const START={name:'AH Feicht / NORA',address:'Münchner Str. 39, 85540 Haar',lat:48.1089,lon:11.7254};
+const customers=[
+['AH Müller KFZ-Meisterbetrieb','Wolfesing 19a, 85604 Zorneding'],['AH Spann','Gartenstr. 1, 85630 Harthausen'],['AMT Marschall UG (haftungsbeschränkt)','Am Schammacher Feld 47, 85567 Grafing'],['Auto Amato e.K','Geltinger Str. 9, 85570 Markt Schwaben'],['Auto Brandstetter Service GmbH','Ottostrasse 3, 85649 Brunnthal'],['Auto Christian GmbH','Aich 41, 85667 Oberpframmern'],['Auto Loibl KFZ-Meisterbetrieb','Nailastr. 2, 81737 München'],['Auto Praxl GmbH','Hermann-Oberth-Str. 25, 85640 Putzbrunn'],['Auto Schmid GmbH KFZ-Meisterbetrieb','Sportplatzstrasse 4, 85635 Höhenkirchen'],['Auto Service Dreyer GmbH','Bajuwarenstr. 104, 81825 München'],['Auto Tom e.K. Inh. Tomislav Sostarac','Schwarzenbacherstr. 24, 81549 München'],['Autoglas UG Ersan Sahin','Eching 21b, 85452 Moosinning'],['Berger KFZ-Meisterbetrieb','Georg-Wimmer-Ring 8a, 85604 Pöring'],['Berufsbildungswerk München Ausbildung Kfz','Musenbergstraße 30-32, 81929 München'],['Bitsch Abschleppdienst','Benzstr. 1c, 85551 Kirchheim'],['Bitsch, Klaus','Münchner Str. 10, 85551 Kirchheim'],['BSH Automobile Fürmetz GmbH u. Co. KG','Schweigerweg 3, 85570 Markt Schwaben'],['Chr. Marschall KFZ-Meisterbetrieb','Oberelkofener Str. 6, 85567 Grafing'],['Colorline Cars GmbH Unfallinstandsetzung','Karl-Hammerschmidt-Str. 45, 85609 Gew.-Gebiet Dornach'],['Daiberl Johann GmbH MAN-Servicepartner','Plenklweberweg 8, 81829 München'],['Daniel Kocman Vertrieb und Technik','Rosenheimer Landstr. 14, 85653 Aying'],['Deininger KFZ-Meisterbetrieb','Obereichhofen 6, 85617 Assling'],['Drivers Inn Julius Staneker','Innstr. 1, 85640 Putzbrunn'],['Eichele Gustav Kraftfahrzeug GmbH','Zehntfeldstr. 219, 81825 München'],['Erben u. Kammermeier GmbH','Vaterstettener Str. 16b, 85598 Baldham'],['Florian Helmut Wölfel KFZ-Meisterbetrieb','Riemer Str. 245, 81929 München'],['Freundorfer, Michael','Pennstr. 4, 81549 München'],['Gedik Bünjamin Kfz-Werkstatt','Rosenheimer Landstr. 45, 85521 Ottobrunn'],['Georg Hauser e.K','Bahnhofstr. 1, 85609 Aschheim'],['Helmut Binder Kfz-Werkstatt','Hohenlindner Str.34, 85622 Feldkirchen'],['Hottenrott Philip Kfz-Meisterbetrieb','Glonner Str. 15, 85640 Putzbrunn'],['Josef Sager','Wallbergstr. 13 a, 83703 Gmund'],['Kfz Hollinger GmbH u. Co.KG','Alpenstr. 3, 85609 Aschheim'],['Kfz-Werkstatt Salmdorf Daniel Candido','Johann-Karg-Str.2K, 85540 Haar'],['Kl. Marschall Kfz-Meisterbetrieb','Am Schmacher Feld 45, 85567 Grafing bei München'],['Kuttendreier GmbH Automobilforum','Drosselweg 21, 81827 München'],['L. Bürner u. M. Günther GbR','Wasserburger Landstr. 173, 81827 München'],['Lack Mich Michael Kajfes','Westring 2, 85614 Kirchseeon'],['MB Lackdoktor GmbH','Triester Str. 65, 81669 München'],['Medineli Sinan KFZ-Meisterbetrieb','Drosselweg 23, 81827 München'],['Michael Sajic Kfz. An und Verkauf','Hasenberglstr. 51 a, 80935 München'],['MOTO Kfz-Meisterbetrieb Inh. Mohammed Al-Tawash','Drosselweg 23, 81827 München'],['MP-Bikes Markus Pfeiffer','St.-Ulrich-Platz 3, 85630 Grasbrunn'],['Mustis Kfz Service','Riemer Str. 362, 81829 München'],['NORA Leistungszentrum Unterlagen','Münchner Str. 39, 85540 Haar'],['Oberhaching Autoservice GmbH','Kolpingring 4, 82041 Oberhaching'],['Preithner Michael Kfz-Meisterbetrieb','Lorenz-Huber-Str. 23a, 85540 Haar'],['Radlmaier GmbH','Putzbrunner Str. 89, 81739 München'],['S-Car Service GmbH','Klausnerring 4, 85551 Kirchheim'],['Salih Tüfekci','Feldmochinger Str. 423, 80995 München'],['Schlöffel GmbH Mazda Servicepartner','Westring 2, 85614 Kirchseeon-Eglharting'],['Schmaus Dieter Kfz-Meisterbetrieb','Industriestr. 6, 85609 Aschheim'],['Schott Autohaus GmbH','Herzogstandstr./Gronsdorf 100, 85540 Haar'],['Simon Gruber Autoservice GmbH','Rosenheimer Landstr. 50, 85521 Ottobrunn'],['Stehbeck, Autoservice','Bajuwarenstr. 127, 81825 München'],['Steiger Kfz-Service Martin Steiger','Kirchenweg 6, 85599 Parsdorf'],['Telli Edip KFZ-Meisterbetrieb','Truderinger Strasse 330, 81825 München'],['W.Frisch GmbH','Mühldorfer Str. 31, 85661 Forstinning']
+].map((x,i)=>({id:i,name:x[0],address:x[1],selected:false,priority:false,lat:null,lon:null}));
 
-const customers = [
-["AH Müller KFZ-Meisterbetrieb","Wolfesing 19a, 85604 Zorneding"],
-["AH Spann","Gartenstr. 1, 85630 Harthausen"],
-["AMT Marschall UG (haftungsbeschränkt)","Am Schammacher Feld 47, 85567 Grafing"],
-["Auto Amato e.K","Geltinger Str. 9, 85570 Markt Schwaben"],
-["Auto Brandstetter Service GmbH","Ottostrasse 3, 85649 Brunnthal"],
-["Auto Christian GmbH","Aich 41, 85667 Oberpframmern"],
-["Auto Loibl KFZ-Meisterbetrieb","Nailastr. 2, 81737 München"],
-["Auto Praxl GmbH","Hermann-Oberth-Str. 25, 85640 Putzbrunn"],
-["Auto Schmid GmbH KFZ-Meisterbetrieb","Sportplatzstrasse 4, 85635 Höhenkirchen"],
-["Auto Service Dreyer GmbH","Bajuwarenstr. 104, 81825 München"],
-["Auto Tom e.K. Inh. Tomislav Sostarac","Schwarzenbacherstr. 24, 81549 München"],
-["Autoglas UG Ersan Sahin","Eching 21b, 85452 Moosinning"],
-["Berger KFZ-Meisterbetrieb","Georg-Wimmer-Ring 8a, 85604 Pöring"],
-["Berufsbildungswerk München Ausbildung Kfz","Musenbergstraße 30-32, 81929 München"],
-["Bitsch Abschleppdienst","Benzstr. 1c, 85551 Kirchheim"],
-["Bitsch, Klaus","Münchner Str. 10, 85551 Kirchheim"],
-["BSH Automobile Fürmetz GmbH u. Co. KG","Schweigerweg 3, 85570 Markt Schwaben"],
-["Chr. Marschall KFZ-Meisterbetrieb","Oberelkofener Str. 6, 85567 Grafing"],
-["Colorline Cars GmbH Unfallinstandsetzung","Karl-Hammerschmidt-Str. 45, 85609 Dornach"],
-["Daiberl Johann GmbH MAN-Servicepartner","Plenklweberweg 8, 81829 München"],
-["Daniel Kocman Vertrieb und Technik","Rosenheimer Landstr. 14, 85653 Aying"],
-["Deininger KFZ-Meisterbetrieb","Obereichhofen 6, 85617 Assling"],
-["Drivers Inn Julius Staneker","Innstr. 1, 85640 Putzbrunn"],
-["Eichele Gustav Kraftfahrzeug GmbH","Zehntfeldstr. 219, 81825 München"],
-["Erben u. Kammermeier GmbH","Vaterstettener Str. 16b, 85598 Baldham"],
-["Florian Helmut Wölfel KFZ-Meisterbetrieb","Riemer Str. 245, 81929 München"],
-["Freundorfer, Michael","Pennstr. 4, 81549 München"],
-["Gedik Bünjamin Kfz-Werkstatt","Rosenheimer Landstr. 45, 85521 Ottobrunn"],
-["Georg Hauser e.K","Bahnhofstr. 1, 85609 Aschheim"],
-["Helmut Binder Kfz-Werkstatt","Hohenlindner Str.34, 85622 Feldkirchen"],
-["Hottenrott Philip Kfz-Meisterbetrieb","Glonner Str. 15, 85640 Putzbrunn"],
-["Josef Sager","Wallbergstr. 13 a, 83703 Gmund"],
-["Kfz Hollinger GmbH u. Co.KG","Alpenstr. 3, 85609 Aschheim"],
-["Kfz-Werkstatt Salmdorf Daniel Candido","Johann-Karg-Str.2K, 85540 Haar"],
-["Kl. Marschall Kfz-Meisterbetrieb","Am Schmacher Feld 45, 85567 Grafing bei München"],
-["Kuttendreier GmbH Automobilforum","Drosselweg 21, 81827 München"],
-["L. Bürner u. M. Günther GbR","Wasserburger Landstr. 173, 81827 München"],
-["Lack Mich Michael Kajfes","Westring 2, 85614 Kirchseeon"],
-["MB Lackdoktor GmbH","Triester Str. 65, 81669 München"],
-["Medineli Sinan KFZ-Meisterbetrieb","Drosselweg 23, 81827 München"],
-["Michael Sajic Kfz. An und Verkauf","Hasenberglstr. 51 a, 80935 München"],
-["MOTO Kfz-Meisterbetrieb Inh. Mohammed Al-Tawash","Drosselweg 23, 81827 München"],
-["MP-Bikes Markus Pfeiffer","St.-Ulrich-Platz 3, 85630 Grasbrunn"],
-["Mustis Kfz Service","Riemer Str. 362, 81829 München"],
-["NORA Leistungszentrum Unterlagen","Münchner Str. 39, 85540 Haar"],
-["Oberhaching Autoservice GmbH","Kolpingring 4, 82041 Oberhaching"],
-["Preithner Michael Kfz-Meisterbetrieb","Lorenz-Huber-Str. 23a, 85540 Haar"],
-["Radlmaier GmbH","Putzbrunner Str. 89, 81739 München"],
-["S-Car Service GmbH","Klausnerring 4, 85551 Kirchheim"],
-["Salih Tüfekci","Feldmochinger Str. 423, 80995 München"],
-["Schlöffel GmbH Mazda Servicepartner","Westring 2, 85614 Kirchseeon-Eglharting"],
-["Schmaus Dieter Kfz-Meisterbetrieb","Industriestr. 6, 85609 Aschheim"],
-["Schott Autohaus GmbH","Herzogstandstr./Gronsdorf 100, 85540 Haar"],
-["Simon Gruber Autoservice GmbH","Rosenheimer Landstr. 50, 85521 Ottobrunn"],
-["Stehbeck, Autoservice","Bajuwarenstr. 127, 81825 München"],
-["Steiger Kfz-Service Martin Steiger","Kirchenweg 6, 85599 Parsdorf"],
-["Telli Edip KFZ-Meisterbetrieb","Truderinger Strasse 330, 81825 München"],
-["W.Frisch GmbH","Mühldorfer Str. 31, 85661 Forstinning"]
-].map((x,i)=>({id:i,name:x[0],address:x[1],selected:false,star:false,lat:null,lon:null}));
+// Koordinaten dienen nur zur sinnvollen Reihenfolge. Die exakte Adresse übernimmt Google Maps.
+const geo={
+'80935':[48.216,11.540],'80995':[48.212,11.527],'81549':[48.106,11.611],'81669':[48.126,11.608],'81737':[48.095,11.630],'81739':[48.084,11.646],'81825':[48.128,11.657],'81827':[48.111,11.691],'81829':[48.132,11.685],'81929':[48.160,11.665],'82041':[48.025,11.617],'83703':[47.751,11.735],'85452':[48.277,11.825],'85521':[48.064,11.664],'85540':[48.1089,11.7254],'85551':[48.180,11.756],'85567':[48.045,11.970],'85570':[48.192,11.869],'85598':[48.106,11.782],'85599':[48.170,11.775],'85604':[48.090,11.827],'85609':[48.145,11.747],'85614':[48.071,11.891],'85617':[48.000,11.893],'85622':[48.170,11.741],'85630':[48.081,11.751],'85635':[48.024,11.728],'85640':[48.075,11.720],'85649':[47.990,11.689],'85653':[47.973,11.790],'85661':[48.180,11.917],'85667':[48.022,11.799]};
+customers.forEach(c=>{let m=c.address.match(/(\d{5})/);let p=m&&m[1];if(geo[p]){c.lat=geo[p][0];c.lon=geo[p][1]}});
 
-let tour = [];
-let originalTour = [];
-let geocodeCache = JSON.parse(localStorage.getItem("noraGeocodeCache") || "{}");
-
-function renderCustomers(){
-  const q = document.getElementById("search").value.toLowerCase().trim();
-  const list = document.getElementById("customerList");
-  list.innerHTML="";
-  customers.filter(c => !q || (c.name+" "+c.address).toLowerCase().includes(q))
-    .forEach(c=>{
-      const row=document.createElement("div");
-      row.className="customer";
-      row.innerHTML=`
-        <input type="checkbox" ${c.selected?"checked":""} onchange="toggleCustomer(${c.id},this.checked)">
-        <div class="customer-main">
-          <div class="name">${escapeHtml(c.name)}</div>
-          <div class="address">${escapeHtml(c.address)}</div>
-        </div>
-        <button class="star ${c.star?"active":""}" title="Priorität" onclick="toggleStar(${c.id})">${c.star?"★":"☆"}</button>`;
-      list.appendChild(row);
-    });
-}
-function escapeHtml(s){return s.replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));}
-function toggleCustomer(id,v){customers[id].selected=v;}
-function toggleStar(id){customers[id].star=!customers[id].star; renderCustomers();}
-function selectAll(){customers.forEach(c=>c.selected=true);renderCustomers();}
-function clearSelection(){customers.forEach(c=>c.selected=false);tour=[];document.getElementById("tourPanel").classList.add("hidden");renderCustomers();}
-
-async function geocode(text){
-  if(geocodeCache[text]) return geocodeCache[text];
-  const url="https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&countrycodes=de&q="+encodeURIComponent(text);
-  const r=await fetch(url,{headers:{"Accept":"application/json"}});
-  if(!r.ok) throw new Error("Geocoding fehlgeschlagen");
-  const data=await r.json();
-  if(!data.length) return null;
-  const p={lat:parseFloat(data[0].lat),lon:parseFloat(data[0].lon)};
-  geocodeCache[text]=p;
-  localStorage.setItem("noraGeocodeCache",JSON.stringify(geocodeCache));
-  return p;
-}
-
-function hav(a,b){
-  const R=6371, p=Math.PI/180;
-  const dLat=(b.lat-a.lat)*p, dLon=(b.lon-a.lon)*p;
-  const x=Math.sin(dLat/2)**2+Math.cos(a.lat*p)*Math.cos(b.lat*p)*Math.sin(dLon/2)**2;
-  return 2*R*Math.asin(Math.sqrt(x));
-}
-
-async function getCoords(list){
-  const all=[{name:BASE.name,address:BASE.address},...list];
-  for(let i=0;i<all.length;i++){
-    const item=all[i];
-    const target=item===all[0]?item.address:item.address+", Deutschland";
-    if(item!==all[0]) {
-      document.getElementById("status").textContent=`Standorte werden vorbereitet … ${i}/${all.length-1}`;
-      const p=await geocode(target);
-      if(p){ const c=list[i-1]; c.lat=p.lat;c.lon=p.lon; }
-      await new Promise(res=>setTimeout(res,1000));
-    }
-  }
-  const base=await geocode(BASE.address);
-  return {base,list};
-}
-
-function nearestRoute(list, start){
-  const remaining=list.slice();
-  const result=[];
-  let current=start;
-  while(remaining.length){
-    remaining.sort((a,b)=>{
-      const da=hav(current,a), db=hav(current,b);
-      const sa=a.star?-1.5:0, sb=b.star?-1.5:0;
-      return (da+sa)-(db+sb);
-    });
-    const next=remaining.shift();
-    result.push(next); current=next;
-  }
-  return result;
-}
-
-function twoOpt(route,start){
-  // Verbesserte Reihenfolge mit einfachem 2-opt, Start bleibt fest.
-  let best=route.slice(), improved=true;
-  function length(r){
-    let d=0,cur=start;
-    for(const x of r){d+=hav(cur,x);cur=x;}
-    d+=hav(cur,start); return d;
-  }
-  let bestLen=length(best);
-  while(improved){
-    improved=false;
-    for(let i=0;i<best.length-1;i++){
-      for(let k=i+1;k<best.length;k++){
-        const candidate=best.slice(0,i).concat(best.slice(i,k+1).reverse(),best.slice(k+1));
-        // Sterne dürfen nicht durch Optimierung völlig ignoriert werden.
-        const starPenalty=candidate.reduce((sum,x,idx)=>sum+(x.star?idx*0.25:0),0);
-        const len=length(candidate)+starPenalty;
-        if(len+0.01<bestLen){
-          best=candidate; bestLen=len; improved=true;
-        }
-      }
-    }
-  }
-  return best;
-}
-
-async function createTour(){
-  const selected=customers.filter(c=>c.selected);
-  if(!selected.length){alert("Bitte zuerst mindestens einen Kunden auswählen.");return;}
-  document.getElementById("tourPanel").classList.remove("hidden");
-  try{
-    const {base,list}=await getCoords(selected);
-    const valid=list.filter(c=>c.lat!==null);
-    if(valid.length<selected.length) alert("Einige Adressen konnten nicht gefunden werden. Diese werden zunächst ausgelassen.");
-    if(!base){throw new Error("Startadresse konnte nicht gefunden werden.");}
-    tour=twoOpt(nearestRoute(valid,base),base);
-    originalTour=tour.slice();
-    renderTour();
-    document.getElementById("status").textContent=`Tour erstellt: ${tour.length} Kunden. Du kannst die Reihenfolge anschließend manuell ändern.`;
-  }catch(e){
-    console.error(e);
-    alert("Die Tour konnte nicht berechnet werden. Bitte Internetverbindung prüfen.");
-    document.getElementById("status").textContent="Fehler bei der Standortermittlung.";
-  }
-}
-
-/*
-  MANUELLE VERSCHIEBUNG:
-  Ein Kunde wird an die gewünschte Position gesetzt.
-  Danach wird NICHT einfach nur getauscht. Stattdessen wird der Teil
-  hinter der gesetzten Position ab diesem Kunden erneut geografisch
-  optimiert. Dadurch kann z.B. Ottobrunn auf Position 2 stehen und
-  Putzbrunn automatisch auf Position 3 rutschen, wenn das geografisch
-  sinnvoll ist.
-*/
-function moveCustomer(from,to){
-  if(to<0||to>=tour.length||from===to)return;
-  const item=tour.splice(from,1)[0];
-  tour.splice(to,0,item);
-
-  const base=geocodeCache[BASE.address];
-  if(base){
-    const anchor=tour[to];
-    const before=tour.slice(0,to);
-    const after=tour.slice(to+1);
-    // Den manuell verschobenen Kunden als "Anker" behandeln.
-    const optimizedAfter=twoOpt(nearestRoute(after,anchor),anchor);
-    tour=before.concat([anchor],optimizedAfter);
-  }
-  renderTour();
-}
-
-function renderTour(){
-  const list=document.getElementById("tourList");
-  if(!tour.length){list.innerHTML='<div class="empty">Noch keine Tour.</div>';return;}
-  list.innerHTML=`<div class="tour-row"><div class="num">🏁</div><div class="tour-info"><div class="name">AH Feicht / NORA</div><div class="address">${BASE.address}</div></div></div>`;
-  tour.forEach((c,i)=>{
-    const row=document.createElement("div");
-    row.className="tour-row";
-    row.innerHTML=`
-      <div class="num">${i+1}</div>
-      <div class="tour-info">
-        <div class="name">${escapeHtml(c.name)} ${c.star?'<span class="badge">★ Priorität</span>':''}</div>
-        <div class="address">${escapeHtml(c.address)}</div>
-        ${i===0?'<div class="tour-note">⬆️ Hier startet die Lieferstrecke.</div>':''}
-      </div>
-      <div class="move">
-        <button onclick="moveCustomer(${i},${i-1})" ${i===0?"disabled":""}>▲</button>
-        <button onclick="moveCustomer(${i},${i+1})" ${i===tour.length-1?"disabled":""}>▼</button>
-      </div>`;
-    list.appendChild(row);
-  });
-  list.insertAdjacentHTML("beforeend",`<div class="tour-row"><div class="num">🏁</div><div class="tour-info"><div class="name">Zurück zu AH Feicht</div><div class="address">${BASE.address}</div></div></div>`);
-}
-
-async function recalculateTour(){
-  await createTour();
-}
-function resetManualOrder(){
-  if(originalTour.length){tour=originalTour.slice();renderTour();}
-}
-function openGoogleMaps(){
-  if(!tour.length)return;
-  // Google Maps URL mit Zwischenzielen; für sehr viele Stopps kann Google begrenzen.
-  const origin=encodeURIComponent(BASE.address);
-  const destination=encodeURIComponent(BASE.address);
-  const waypoints=tour.map(c=>encodeURIComponent(c.address)).join("|");
-  const url=`https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${destination}&waypoints=${waypoints}&travelmode=driving`;
-  window.open(url,"_blank");
-}
-
-renderCustomers();
+let tour=[];
+function esc(s){return s.replace(/[&<>'"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[ch]));}
+function renderCustomers(){const q=document.getElementById('search').value.toLowerCase();const box=document.getElementById('customers');box.innerHTML='';customers.filter(c=>(c.name+' '+c.address).toLowerCase().includes(q)).forEach(c=>{box.insertAdjacentHTML('beforeend',`<div class="customer"><input type="checkbox" ${c.selected?'checked':''} onchange="toggle(${c.id},this.checked)"><div class="info"><div class="name">${esc(c.name)}</div><div class="addr">${esc(c.address)}</div></div><button class="star ${c.priority?'on':''}" title="Priorität" onclick="priority(${c.id})">${c.priority?'★':'☆'}</button></div>`)});document.getElementById('count').textContent=customers.filter(c=>c.selected).length}
+function toggle(id,v){customers[id].selected=v;renderCustomers()}
+function priority(id){customers[id].priority=!customers[id].priority;renderCustomers()}
+function selectAll(){customers.forEach(c=>c.selected=true);renderCustomers()}
+function clearAll(){customers.forEach(c=>c.selected=false);tour=[];renderCustomers();renderRoute()}
+function dist(a,b){const dx=(a.lat-b.lat)*111,dy=(a.lon-b.lon)*111*Math.cos((a.lat+b.lat)/2*Math.PI/180);return Math.hypot(dx,dy)}
+function buildRoute(list,start=START){let remaining=[...list],cur=start,out=[];while(remaining.length){let best=null,bestScore=Infinity;for(const c of remaining){let d=dist(cur,c);let score=d*(c.priority?.72:1);if(score<bestScore){bestScore=score;best=c}}out.push(best);remaining=remaining.filter(x=>x.id!==best.id);cur=best}return out}
+function twoOpt(route){let best=route.slice(),changed=true;while(changed){changed=false;for(let i=0;i<best.length-2;i++)for(let j=i+1;j<best.length;j++){const a=i?best[i-1]:START,b=best[i],c=best[j],d=j<best.length-1?best[j+1]:START;if(dist(a,b)+dist(c,d)>dist(a,c)+dist(b,d)){best.splice(i,j-i+1,...best.slice(i,j+1).reverse());changed=true}}}return best}
+function createTour(){let selected=customers.filter(c=>c.selected);if(!selected.length){alert('Bitte zuerst mindestens einen Kunden auswählen.');return}tour=twoOpt(buildRoute(selected));renderRoute();document.getElementById('routeButtons').classList.remove('hidden')}
+function move(i,dir){if(i<0||i>=tour.length)return;let ni=i+dir;if(ni<0||ni>=tour.length)return;const moved=tour[i];tour.splice(i,1);tour.splice(ni,0,moved);
+ // Der manuell verschobene Kunde bleibt an seiner neuen Position. Danach wird nur der Abschnitt hinter ihm optimiert.
+ const anchor=ni; if(anchor<tour.length-1){const fixed=tour.slice(0,anchor+1),rest=tour.slice(anchor+1);tour=fixed.concat(twoOpt(buildRoute(rest,tour[anchor])))} renderRoute()}
+function renderRoute(){const box=document.getElementById('route');if(!tour.length){box.innerHTML='<div class="empty">Noch keine Tour erstellt.</div>';return}box.innerHTML=tour.map((c,i)=>`<div class="route-item"><div class="num">${i+1}</div><div class="route-main"><div class="name">${c.priority?'⭐ ':''}${esc(c.name)}</div><div class="addr">${esc(c.address)}</div></div><div class="route-actions"><button class="arrow" onclick="move(${i},-1)" ${i===0?'disabled':''}>↑</button><button class="arrow" onclick="move(${i},1)" ${i===tour.length-1?'disabled':''}>↓</button></div></div>`).join('')}
+function openGoogleMaps(){if(!tour.length)return;let addresses=[START.address,...tour.map(c=>c.address),START.address];let chunks=[];let maxStops=9;for(let i=0;i<addresses.length-1;i+=maxStops){let part=addresses.slice(i,Math.min(i+maxStops+1,addresses.length));if(i>0)part.unshift(addresses[i-1]);chunks.push(part)}chunks.forEach((part,idx)=>{const origin=encodeURIComponent(part[0]),dest=encodeURIComponent(part[part.length-1]),wps=part.slice(1,-1).map(encodeURIComponent).join('|');const url=`https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${dest}&travelmode=driving${wps?'&waypoints='+wps:''}`;setTimeout(()=>window.open(url,'_blank'),idx*500)})}
+function resetTour(){tour=[];renderRoute();document.getElementById('routeButtons').classList.add('hidden')}
+document.getElementById('search').addEventListener('input',renderCustomers);renderCustomers();
 </script>
 </body>
 </html>
